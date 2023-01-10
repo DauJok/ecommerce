@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     # Local apps
     "market.dashboard",
     "market.inventory",
+    "market.demo",
     # External apps
     "mptt",
 ]
@@ -116,7 +117,7 @@ TIME_ZONE = "UTC"
 
 USE_I18N = True
 
-USE_TZ = True
+# USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)

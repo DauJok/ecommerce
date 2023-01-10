@@ -16,5 +16,7 @@ def django_fixture_setup(django_db_blocker, django_db_setup):
     """Load DB data fixtures"""
     # Unblock database access since its not allowed by default.
     with django_db_blocker.unblock():
+        # Loading fixtures with management command
         call_command("loaddata", "db_admin_fixture.json")
         call_command("loaddata", "db_category_fixture.json")
+        call_command("loaddata", "db_product_fixture.json")
