@@ -199,6 +199,12 @@ def test_inventory_db_product_inventory_insert_data(
     assert new_product.weight == 987
 
 
+def test_inventory_db_producttype_insert_data(db, product_type_factory):
+
+    new_type = product_type_factory.create(name="demo_type")
+    assert new_type.name == "demo_type"
+
+
 def test_inventory_db_producttype_uniqueness_integrity(
     db, product_type_factory
 ):
@@ -270,3 +276,36 @@ def test_inventory_db_media_insert_data(db, media_factory):
     assert new_media.image == "images/default.png"
     assert new_media.alt_text == "a default image solid color"
     assert new_media.is_featured == 1
+
+
+@pytest.mark.dbfixture
+@pytest.mark.parametrize(
+    "id, product_inventory, last_checked, units, units_sold",
+    [
+        (1, 1, "2023-01-11 22:14:18", 135, 0),
+        (8616, 8616, "2023-01-11 22:14:18", 100, 0),
+    ],
+)
+def test_inventory_db_stock_dataset(
+    db,
+    django_fixture_setup,
+    id,
+    product_inventory,
+    last_checked,
+    units,
+    units_sold,
+):
+    result = models.Stock.objects.get(id=id)
+    result_last_checked = result.last_checked.strftime("%Y-%m-%d %H:%M:%S")
+    assert result.product_inventory.id == product_inventory
+    assert result_last_checked == last_checked
+    assert result.units == units
+    assert result.units_sold == units_sold
+
+
+def test_inventory_db_stock_insert_data(db, stock_factory):
+    # Overriding product_inventory sku for test when creating
+    new_stock = stock_factory.create(product_inventory__sku="123456789")
+    assert new_stock.product_inventory.sku == "123456789"
+    assert new_stock.units == 2
+    assert new_stock.units_sold == 100

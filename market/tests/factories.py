@@ -25,8 +25,8 @@ class ProductFactory(factory.django.DjangoModelFactory):
     slug = fake.lexify(text="prod_slug_??????")
     description = fake.text()
     is_active = True
-    created_at = "2023-01-09 20:18:33.279092"
-    updated_at = "2023-01-09 20:18:33.279092"
+    created_at = "2023-01-10 22:14:18.279095"
+    updated_at = "2023-01-10 22:14:18.279095"
 
     @factory.post_generation
     def category(self, create, extracted, **kwargs):
@@ -80,9 +80,20 @@ class MediaFactory(factory.django.DjangoModelFactory):
     is_featured = True
 
 
+class StockFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.Stock
+
+    product_inventory = factory.SubFactory(ProductInventoryFactory)
+    # Hardcoding for test_inventory_db_stock_insert_data test
+    units = 2
+    units_sold = 100
+
+
 register(CategoryFactory)
 register(ProductFactory)
 register(ProductTypeFactory)
 register(BrandFactory)
 register(ProductInventoryFactory)
 register(MediaFactory)
+register(StockFactory)
