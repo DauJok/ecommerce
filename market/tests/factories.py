@@ -106,6 +106,30 @@ class ProductAttributeValueFactory(factory.django.DjangoModelFactory):
     attribute_value = fake.lexify(text="attribute_value_??????")
 
 
+class ProductAttributeListsFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.ProductAttributeLists
+
+    # Helps create attributes for product using other model factories.
+    attributevalues = factory.SubFactory(ProductAttributeValueFactory)
+    productinventory = factory.SubFactory(ProductInventoryFactory)
+
+
+class ProductWithAttributeListsFactory(ProductInventoryFactory):
+    # Helps create a product that is connected to two new attributes.
+    # By inheriting from ProductInventoryFactory we will be able to override
+    # product parameters! WOW
+    attributevalues1 = factory.RelatedFactory(
+        ProductAttributeListsFactory,
+        factory_related_name="productinventory",
+    )
+    attributevalues2 = factory.RelatedFactory(
+        ProductAttributeListsFactory,
+        factory_related_name="productinventory",
+    )
+    # Adding 2 attributes to product, but could be any number of them.
+
+
 register(CategoryFactory)
 register(ProductFactory)
 register(ProductTypeFactory)
@@ -115,3 +139,4 @@ register(MediaFactory)
 register(StockFactory)
 register(ProductAttributeFactory)
 register(ProductAttributeValueFactory)
+register(ProductWithAttributeListsFactory)

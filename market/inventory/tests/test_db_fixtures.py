@@ -361,9 +361,21 @@ def test_inventory_db_product_attribute_value_data(
     db, product_attribute_value_factory
 ):
     # Override ProductAttribute name when creating test table
-    #  to test to new value inserted in table
+    # to test to new value inserted in table
     new_attribute_value = product_attribute_value_factory.create(
         attribute_value="new_value", product_attribute__name="new_value"
     )
     assert new_attribute_value.attribute_value == "new_value"
     assert new_attribute_value.product_attribute.name == "new_value"
+
+
+def test_inventory_db_insert_inventory_product_values(
+    db, product_with_attribute_lists_factory
+):
+    new_inventory_attribute = product_with_attribute_lists_factory(
+        sku="123456789"
+    )
+    result = models.ProductInventory.objects.get(sku="123456789")
+    # Count all ProductInventory attribute_values should be 2
+    count = result.attribute_values.all().count()
+    assert count == 2

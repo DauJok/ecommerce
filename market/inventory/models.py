@@ -153,6 +153,50 @@ class Brand(models.Model):
     )
 
 
+class ProductAttribute(models.Model):
+    """Product attribute table"""
+
+    name = models.CharField(
+        max_length=255,
+        unique=True,
+        null=False,
+        blank=False,
+        verbose_name=_("product attribute name"),
+        help_text=_("format: required, unique, max characters-255"),
+    )
+    description = models.TextField(
+        unique=False,
+        null=False,
+        blank=False,
+        verbose_name=_("product attribute description"),
+        help_text=_("format: required"),
+    )
+
+    def __str__(self):
+        return self.name
+
+
+class ProductAttributeValue(models.Model):
+    """Product Attribute vlaue table"""
+
+    product_attribute = models.ForeignKey(
+        ProductAttribute,
+        related_name="product_attribute",
+        on_delete=models.PROTECT,
+    )
+    attribute_value = models.CharField(
+        max_length=255,
+        unique=False,
+        null=False,
+        blank=False,
+        verbose_name=_("attribute value"),
+        help_text=_("format: required, max characters-255"),
+    )
+
+    def __str__(self):
+        return f"{self.product_attribute.name} : {self.attribute_value}"
+
+
 class ProductInventory(models.Model):
     """Product inventory table"""
 
@@ -181,11 +225,11 @@ class ProductInventory(models.Model):
     brand = models.ForeignKey(
         Brand, related_name="brand", on_delete=models.PROTECT
     )
-    # attribute_values = models.ManyToManyField(
-    #     ProductAttributeValue,
-    #     related_name="product_attribute_values",
-    #     through="ProductAttributeValues",
-    # )
+    attribute_values = models.ManyToManyField(
+        ProductAttributeValue,
+        related_name="product_attribute_values",
+        through="ProductAttributeLists",
+    )
     is_active = models.BooleanField(
         default=True,
         verbose_name=_("product visibility"),
@@ -335,45 +379,23 @@ class Stock(models.Model):
     )
 
 
-class ProductAttribute(models.Model):
-    """Product attribute table"""
+class ProductAttributeLists(models.Model):
+    """Product attribute value link table
+    (resolves the many-to-many associative relationships
+    by implementing a compound field table between two tables.)
+    """
 
-    name = models.CharField(
-        max_length=255,
-        unique=True,
-        null=False,
-        blank=False,
-        verbose_name=_("product attribute name"),
-        help_text=_("format: required, unique, max characters-255"),
-    )
-    description = models.TextField(
-        unique=False,
-        null=False,
-        blank=False,
-        verbose_name=_("product attribute description"),
-        help_text=_("format: required"),
-    )
-
-    def __str__(self):
-        return self.name
-
-
-class ProductAttributeValue(models.Model):
-    """Product Attribute vlaue table"""
-
-    product_attribute = models.ForeignKey(
-        ProductAttribute,
-        related_name="product_attribute",
+    attributevalues = models.ForeignKey(
+        ProductAttributeValue,
+        related_name="attribute_values",
         on_delete=models.PROTECT,
     )
-    attribute_value = models.CharField(
-        max_length=255,
-        unique=False,
-        null=False,
-        blank=False,
-        verbose_name=_("attribute value"),
-        help_text=_("format: required, max characters-255"),
+    productinventory = models.ForeignKey(
+        ProductInventory,
+        related_name="product_inventory_atribute",
+        on_delete=models.PROTECT,
     )
 
-    def __str__(self):
-        return f"{self.product_attribute.name} : {self.attribute_value}"
+    class Meta:
+        # Both values can not be repeated, ONLY unique values together
+        unique_together = (("attributevalues", "productinventory"),)
