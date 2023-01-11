@@ -90,7 +90,7 @@ def test_inventory_db_product_dbfixture(
 
 
 def test_inventory_db_product_uniqueness_integrity(db, product_factory):
-    new_web_id = product_factory.create(web_id=123456789)
+    product_factory.create(web_id=123456789)
     with pytest.raises(IntegrityError):
         product_factory.create(web_id=123456789)
 
@@ -197,3 +197,22 @@ def test_inventory_db_product_inventory_insert_data(
     assert new_product.store_price == 92.00
     assert new_product.sale_price == 46.00
     assert new_product.weight == 987
+
+
+def test_inventory_db_producttype_uniqueness_integrity(
+    db, product_type_factory
+):
+    product_type_factory.create(name="not_unique_product_type_name")
+    with pytest.raises(IntegrityError):
+        product_type_factory.create(name="not_unique_product_type_name")
+
+
+def test_inventory_db_brand_insert_data(db, brand_factory):
+    new_brand = brand_factory.create(name="brand_name")
+    assert new_brand.name == "brand_name"
+
+
+def test_inventory_db_brand_uniqueness_integrity(db, brand_factory):
+    brand_factory.create(name="not_unique_brand_name")
+    with pytest.raises(IntegrityError):
+        brand_factory.create(name="not_unique_brand_name")
