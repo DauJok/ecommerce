@@ -333,3 +333,26 @@ class Stock(models.Model):
         verbose_name=_("units sold to date"),
         help_text=_("format: required, default-0"),
     )
+
+
+class ProductAttribute(models.Model):
+    """Product attribute table"""
+
+    name = models.CharField(
+        max_length=255,
+        unique=True,
+        null=False,
+        blank=False,
+        verbose_name=_("product attribute name"),
+        help_text=_("format: required, unique, max characters-255"),
+    )
+    description = models.TextField(
+        unique=False,
+        null=False,
+        blank=False,
+        verbose_name=_("product attribute description"),
+        help_text=_("format: required"),
+    )
+
+    def __str__(self):
+        return self.name
